@@ -1,0 +1,65 @@
+gym-management/                          # Root project
+├── docker-compose.yml                   # Orchestrates all services
+├── .env                                 # Shared env variables
+├── README.md
+│
+├── config-server/                       # Spring Cloud Config Server
+│   ├── src/main/resources/configs/      # All service .yml configs live here
+│   └── Dockerfile
+│
+├── eureka-server/                       # Service Discovery
+│   └── Dockerfile
+│
+├── api-gateway/                         # Spring Cloud Gateway (Auth filter here)
+│   └── Dockerfile
+│
+├── auth-service/                        # UC-01, UC-02 | JWT, Register, Login
+│   └── src/main/java/com/gym/auth/
+│       ├── controller/AuthController.java
+│       ├── service/AuthService.java
+│       ├── repository/UserRepository.java
+│       ├── entity/User.java
+│       ├── dto/{RegisterRequest, LoginRequest, AuthResponse}.java
+│       ├── security/{JwtUtil, JwtFilter}.java
+│       └── aop/LoggingAspect.java
+│
+├── member-service/                      # UC-12 to UC-14 | Member profiles, admin ops
+│   └── src/main/java/com/gym/member/
+│       ├── controller/MemberController.java
+│       ├── service/MemberService.java
+│       ├── repository/MemberRepository.java
+│       ├── entity/Member.java
+│       ├── dto/{MemberDTO, MemberProfileResponse}.java
+│       └── aop/LoggingAspect.java
+│
+├── subscription-service/                # UC-03 to UC-04, UC-10, UC-11 | Plans & Subscriptions
+│   └── src/main/java/com/gym/subscription/
+│       ├── controller/{PlanController, SubscriptionController, InvitationController}.java
+│       ├── service/{PlanService, SubscriptionService, InvitationService}.java
+│       ├── repository/{PlanRepository, SubscriptionRepository, InvitationRepository}.java
+│       ├── entity/{Plan, Subscription, Invitation}.java
+│       ├── dto/...
+│       ├── scheduler/SubscriptionExpiryScheduler.java  # Auto-expiry cron
+│       └── aop/LoggingAspect.java
+│
+├── equipment-service/                   # UC-15, UC-16 | Equipment inventory
+│   └── src/main/java/com/gym/equipment/
+│       ├── controller/EquipmentController.java
+│       ├── service/EquipmentService.java
+│       ├── repository/EquipmentRepository.java
+│       ├── entity/Equipment.java
+│       └── aop/LoggingAspect.java
+│
+├── attendance-service/                  # UC-21 | Check-in/out, attendance logs
+│   └── src/main/java/com/gym/attendance/
+│       ├── controller/AttendanceController.java
+│       ├── service/AttendanceService.java
+│       ├── repository/AttendanceRepository.java
+│       ├── entity/AttendanceLog.java
+│       └── aop/LoggingAspect.java
+│
+└── reporting-service/                   # UC-18, UC-19 | Dashboard, accounting
+    └── src/main/java/com/gym/reporting/
+        ├── controller/ReportingController.java
+        ├── service/ReportingService.java
+        └── aop/LoggingAspect.java

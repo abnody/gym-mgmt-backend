@@ -1,0 +1,15 @@
+com\gym\subscription\repository\InvitationRepository.class
+com\gym\subscription\entity\Invitation$InvitationBuilder.class
+com\gym\subscription\scheduler\SubscriptionExpiryScheduler.class
+com\gym\subscription\entity\Subscription$Status.class
+com\gym\subscription\entity\Subscription.class
+com\gym\subscription\controller\PlanController.class
+com\gym\subscription\entity\Plan$PlanBuilder.class
+com\gym\subscription\entity\Plan.class
+com\gym\subscription\entity\Invitation.class
+com\gym\subscription\entity\Plan$Status.class
+com\gym\subscription\entity\Invitation$Status.class
+com\gym\subscription\entity\Subscription$SubscriptionBuilder.class
+com\gym\subscription\repository\PlanRepository.class
+com\gym\subscription\repository\SubscriptionRepository.class
+com\gym\subscription\SubscriptionServiceApplication.class

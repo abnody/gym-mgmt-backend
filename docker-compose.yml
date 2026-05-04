@@ -1,0 +1,207 @@
+version: '3.8'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GYM Management System — Docker Compose
+# Usage:
+#   1. Copy .env.example to .env and fill in values
+#   2. docker-compose up --build
+#
+# Startup order: mysql → eureka → config → api-gateway → all services
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── DATABASE ────────────────────────────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: gym-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_USER: ${DB_USER:-gym_user}
+      MYSQL_PASSWORD: ${DB_PASS:-gym_pass}
+      # Default database (required by MySQL image to start cleanly)
+      MYSQL_DATABASE: gym_default
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      # Init script runs once on first startup — creates all service databases
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - gym-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpass}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  # ── INFRASTRUCTURE (must start before microservices) ───────────────────────
+  eureka-server:
+    build: ./eureka-server
+    container_name: gym-eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - gym-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  config-server:
+    build: ./config-server
+    container_name: gym-config
+    ports:
+      - "8888:8888"
+    environment:
+      EUREKA_URI: http://eureka-server:8761/eureka/
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - gym-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: gym-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      JWT_SECRET: ${JWT_SECRET:-gym-super-secret-key-change-in-production}
+      EUREKA_URI: http://eureka-server:8761/eureka/
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - gym-network
+    restart: unless-stopped
+
+  # ── MICROSERVICES ───────────────────────────────────────────────────────────
+  auth-service:
+    build: ./auth-service
+    container_name: gym-auth
+    ports:
+      - "8081:8081"
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/gym_auth_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      DB_USER: ${DB_USER:-gym_user}
+      DB_PASS: ${DB_PASS:-gym_pass}
+      JWT_SECRET: ${JWT_SECRET:-gym-super-secret-key-change-in-production}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - gym-network
+    restart: unless-stopped
+
+  member-service:
+    build: ./member-service
+    container_name: gym-member
+    ports:
+      - "8082:8082"
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/gym_member_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      DB_USER: ${DB_USER:-gym_user}
+      DB_PASS: ${DB_PASS:-gym_pass}
+      JWT_SECRET: ${JWT_SECRET:-gym-super-secret-key-change-in-production}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - gym-network
+    restart: unless-stopped
+
+  subscription-service:
+    build: ./subscription-service
+    container_name: gym-subscription
+    ports:
+      - "8083:8083"
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/gym_subscription_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      DB_USER: ${DB_USER:-gym_user}
+      DB_PASS: ${DB_PASS:-gym_pass}
+      JWT_SECRET: ${JWT_SECRET:-gym-super-secret-key-change-in-production}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - gym-network
+    restart: unless-stopped
+
+  equipment-service:
+    build: ./equipment-service
+    container_name: gym-equipment
+    ports:
+      - "8084:8084"
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/gym_equipment_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      DB_USER: ${DB_USER:-gym_user}
+      DB_PASS: ${DB_PASS:-gym_pass}
+      JWT_SECRET: ${JWT_SECRET:-gym-super-secret-key-change-in-production}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - gym-network
+    restart: unless-stopped
+
+  attendance-service:
+    build: ./attendance-service
+    container_name: gym-attendance
+    ports:
+      - "8085:8085"
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/gym_attendance_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      DB_USER: ${DB_USER:-gym_user}
+      DB_PASS: ${DB_PASS:-gym_pass}
+      JWT_SECRET: ${JWT_SECRET:-gym-super-secret-key-change-in-production}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - gym-network
+    restart: unless-stopped
+
+  reporting-service:
+    build: ./reporting-service
+    container_name: gym-reporting
+    ports:
+      - "8086:8086"
+    environment:
+      JWT_SECRET: ${JWT_SECRET:-gym-super-secret-key-change-in-production}
+      EUREKA_URI: http://eureka-server:8761/eureka/
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - gym-network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  gym-network:
+    driver: bridge
