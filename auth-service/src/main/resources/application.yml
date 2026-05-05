@@ -1,10 +1,19 @@
 server:
-  port: 8081
+  port: 8081  
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: never
+    include-exception: false
 
 spring:
   application:
     name: auth-service
-
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
   # ── Database ──────────────────────────────────────────────────────────────
   datasource:
     # DB_URL env var is set in docker-compose.yml
@@ -16,7 +25,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update         # Creates/updates tables automatically
+      ddl-auto: update # Creates/updates tables automatically
     show-sql: false
     properties:
       hibernate:
@@ -34,11 +43,14 @@ eureka:
       defaultZone: http://eureka-server:8761/eureka/
   instance:
     prefer-ip-address: true
-
+    
+logging:
+  level:
+    org.springframework.security: DEBUG
 # ── JWT ───────────────────────────────────────────────────────────────────────
 jwt:
   secret: ${JWT_SECRET:gym-super-secret-key-change-in-production}
-  expiration: 86400000   # 24 hours in milliseconds
+  expiration: 86400000 # 24 hours in milliseconds
 
 # ── Swagger / OpenAPI ─────────────────────────────────────────────────────────
 springdoc:

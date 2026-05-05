@@ -1,8 +1,0 @@
-com\gym\equipment\controller\EquipmentController.class
-com\gym\equipment\entity\Equipment$Status.class
-com\gym\equipment\entity\Equipment.class
-com\gym\equipment\repository\EquipmentRepository.class
-com\gym\equipment\EquipmentServiceApplication.class
-com\gym\equipment\aop\LoggingAspect.class
-com\gym\equipment\service\EquipmentService.class
-com\gym\equipment\entity\Equipment$EquipmentBuilder.class

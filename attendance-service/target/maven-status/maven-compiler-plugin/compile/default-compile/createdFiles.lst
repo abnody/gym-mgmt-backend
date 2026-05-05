@@ -1,8 +1,0 @@
-com\gym\attendance\AttendanceServiceApplication.class
-com\gym\attendance\entity\AttendanceLog$Status.class
-com\gym\attendance\entity\AttendanceLog$AttendanceLogBuilder.class
-com\gym\attendance\repository\AttendanceRepository.class
-com\gym\attendance\aop\LoggingAspect.class
-com\gym\attendance\entity\AttendanceLog.class
-com\gym\attendance\service\AttendanceService.class
-com\gym\attendance\controller\AttendanceController.class

@@ -4,7 +4,17 @@ server:
 spring:
   application:
     name: api-gateway
+  config:
+    import: "configserver:http://gym-config:8888"
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration
   cloud:
+    config:
+      fail-fast: false   
+      retry:
+        max-attempts: 6
+        initial-interval: 1500
     gateway:
       routes:
 
@@ -111,7 +121,3 @@ management:
         include: health, info, gateway
 
 # Disable Spring Security auto-config in gateway (gateway uses reactive stack)
-spring:
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration

@@ -22,7 +22,7 @@ public class User {
     private String phone;
 
     @Column(nullable = false)
-    private String password;   // BCrypt hashed
+    private String password;   
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

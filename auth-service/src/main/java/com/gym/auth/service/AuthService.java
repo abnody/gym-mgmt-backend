@@ -2,11 +2,17 @@ package com.gym.auth.service;
 
 import com.gym.auth.dto.*;
 import com.gym.auth.entity.User;
+import com.gym.auth.exception.EmailAlreadyExistsException;
 import com.gym.auth.repository.UserRepository;
 import com.gym.auth.security.JwtUtil;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.gym.auth.exception.AccountDeactivatedException;
+import com.gym.auth.exception.InvalidCredentialsException;
 
 @Service
 @RequiredArgsConstructor
@@ -18,8 +24,9 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email already registered");
+            throw new EmailAlreadyExistsException(request.getEmail() );
         }
+        
         User user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
@@ -40,10 +47,10 @@ public class AuthService {
 
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
-        if (!user.isActive()) throw new IllegalArgumentException("Account deactivated");
+                .orElseThrow(() -> new InvalidCredentialsException());
+        if (!user.isActive()) throw new AccountDeactivatedException();
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("Invalid credentials");
+            throw new InvalidCredentialsException();
         }
         String token = jwtUtil.generateToken(user.getId(), user.getRole().name());
         return AuthResponse.builder()

@@ -1,5 +1,0 @@
-com\gym\reporting\ReportingServiceApplication.class
-com\gym\reporting\controller\ReportingController.class
-com\gym\reporting\dto\DashboardStats$DashboardStatsBuilder.class
-com\gym\reporting\dto\DashboardStats.class
-com\gym\reporting\aop\LoggingAspect.class
