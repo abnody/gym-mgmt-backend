@@ -1,7 +1,7 @@
 package com.gym.equipment;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+// import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication 
+//@SpringBootApplication 
 public class EquipmentServiceApplication {
     public static void main(String[] args) { 
         // SpringApplication.run(EquipmentServiceApplication.class, args); 

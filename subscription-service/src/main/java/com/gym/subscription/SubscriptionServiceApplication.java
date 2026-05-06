@@ -1,9 +1,9 @@
 package com.gym.subscription;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableScheduling;
+// import org.springframework.boot.autoconfigure.SpringBootApplication;
+// import org.springframework.scheduling.annotation.EnableScheduling;
 
-@SpringBootApplication 
-@EnableScheduling
+// @SpringBootApplication 
+// @EnableScheduling
 public class SubscriptionServiceApplication {
     public static void main(String[] args) { 
         // SpringApplication.run(SubscriptionServiceApplication.class, args);
