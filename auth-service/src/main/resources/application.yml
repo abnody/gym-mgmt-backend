@@ -1,0 +1,67 @@
+server:
+  port: 8081  
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: never
+    include-exception: false
+
+spring:
+  application:
+    name: auth-service
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+  # ── Database ──────────────────────────────────────────────────────────────
+  datasource:
+    # DB_URL env var is set in docker-compose.yml
+    # For local dev (no Docker): set url to jdbc:mysql://localhost:3306/gym_auth_db
+    url: ${DB_URL:jdbc:mysql://localhost:3306/gym_auth_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    username: ${DB_USER:root}
+    password: ${DB_PASS:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update # Creates/updates tables automatically
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+
+  # ── Config Server (optional — falls back to local config if unavailable) ──
+  config:
+    import: optional:configserver:http://config-server:8888
+
+# ── Eureka ────────────────────────────────────────────────────────────────────
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    
+logging:
+  level:
+    org.springframework.security: DEBUG
+# ── JWT ───────────────────────────────────────────────────────────────────────
+jwt:
+  secret: ${JWT_SECRET:gym-super-secret-key-change-in-production}
+  expiration: 86400000 # 24 hours in milliseconds
+
+# ── Swagger / OpenAPI ─────────────────────────────────────────────────────────
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+# ── Actuator ──────────────────────────────────────────────────────────────────
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info

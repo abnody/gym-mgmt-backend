@@ -1,0 +1,123 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  config:
+    import: "configserver:http://gym-config:8888"
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration
+  cloud:
+    config:
+      fail-fast: false   
+      retry:
+        max-attempts: 6
+        initial-interval: 1500
+    gateway:
+      routes:
+
+        # ── PUBLIC ROUTES (no JWT filter) ─────────────────────────────────────
+
+        # Auth: register & login — always public
+        - id: auth-service-public
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=1
+
+        # Plans: GET /api/plans is public (members browse plans before subscribing)
+        - id: subscription-service-plans-public
+          uri: lb://subscription-service
+          predicates:
+            - Path=/api/plans
+            - Method=GET
+          filters:
+            - StripPrefix=1
+
+        # Equipment: GET /api/equipment is public (members view equipment)
+        - id: equipment-service-public
+          uri: lb://equipment-service
+          predicates:
+            - Path=/api/equipment
+            - Method=GET
+          filters:
+            - StripPrefix=1
+
+        # Attendance capacity: public (no login needed to see current occupancy)
+        - id: attendance-capacity-public
+          uri: lb://attendance-service
+          predicates:
+            - Path=/api/attendance/capacity
+            - Method=GET
+          filters:
+            - StripPrefix=1
+
+        # ── PROTECTED ROUTES (JWT required — validated by JwtAuthFilter) ───────
+
+        # Member management (MEMBER self, ADMIN all)
+        - id: member-service-protected
+          uri: lb://member-service
+          predicates:
+            - Path=/api/members/**
+          filters:
+            - StripPrefix=1
+            - name: JwtAuthFilter
+
+        # Subscription: POST /plans (admin only), all /subscriptions, /invitations
+        - id: subscription-service-protected
+          uri: lb://subscription-service
+          predicates:
+            - Path=/api/plans/**, /api/subscriptions/**, /api/invitations/**
+          filters:
+            - StripPrefix=1
+            - name: JwtAuthFilter
+
+        # Equipment: POST, PATCH, DELETE (admin only) — role enforced at service
+        - id: equipment-service-protected
+          uri: lb://equipment-service
+          predicates:
+            - Path=/api/equipment/**
+          filters:
+            - StripPrefix=1
+            - name: JwtAuthFilter
+
+        # Attendance: check-in, check-out, logs (requires login)
+        - id: attendance-service-protected
+          uri: lb://attendance-service
+          predicates:
+            - Path=/api/attendance/**
+          filters:
+            - StripPrefix=1
+            - name: JwtAuthFilter
+
+        # Reporting: admin/owner only — role enforced at service level too
+        - id: reporting-service-protected
+          uri: lb://reporting-service
+          predicates:
+            - Path=/api/reports/**
+          filters:
+            - StripPrefix=1
+            - name: JwtAuthFilter
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+# JWT secret — must match every service's jwt.secret value
+jwt:
+  secret: ${JWT_SECRET:gym-super-secret-key-change-in-production}
+  expiration: 86400000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, gateway
+
+# Disable Spring Security auto-config in gateway (gateway uses reactive stack)
