@@ -1,1 +1,8 @@
-com\gym\member\MemberServiceApplication.class
+com\gym\member_service\repository\MemberRepository.class
+com\gym\member_service\dto\MemberRequestDTO.class
+com\gym\member_service\service\MemberServiceImpl.class
+com\gym\member_service\MemberServiceApplication.class
+com\gym\member_service\service\MemberService.class
+com\gym\member_service\entity\Member.class
+com\gym\member_service\dto\MemberResponseDTO.class
+com\gym\member_service\controller\MemberController.class

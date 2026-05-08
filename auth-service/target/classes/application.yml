@@ -6,6 +6,11 @@ server:
     include-stacktrace: never
     include-exception: false
 
+app:
+  admin:
+    email: ${ADMIN_EMAIL}
+    password: ${ADMIN_PASSWORD}
+    
 spring:
   application:
     name: auth-service

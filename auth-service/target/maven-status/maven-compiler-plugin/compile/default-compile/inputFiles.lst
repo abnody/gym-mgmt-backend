@@ -8,6 +8,7 @@ D:\study\programming\ALL PROJECTS\GYM_MGMT\Backend\gym-management\auth-service\s
 D:\study\programming\ALL PROJECTS\GYM_MGMT\Backend\gym-management\auth-service\src\main\java\com\gym\auth\dto\AuthResponse.java
 D:\study\programming\ALL PROJECTS\GYM_MGMT\Backend\gym-management\auth-service\src\main\java\com\gym\auth\exception\AccountDeactivatedException.java
 D:\study\programming\ALL PROJECTS\GYM_MGMT\Backend\gym-management\auth-service\src\main\java\com\gym\auth\security\JwtUtil.java
+D:\study\programming\ALL PROJECTS\GYM_MGMT\Backend\gym-management\auth-service\src\main\java\com\gym\auth\config\DataSeeder.java
 D:\study\programming\ALL PROJECTS\GYM_MGMT\Backend\gym-management\auth-service\src\main\java\com\gym\auth\config\SecurityConfig.java
 D:\study\programming\ALL PROJECTS\GYM_MGMT\Backend\gym-management\auth-service\src\main\java\com\gym\auth\exception\GlobalExceptionHandler.java
 D:\study\programming\ALL PROJECTS\GYM_MGMT\Backend\gym-management\auth-service\src\main\java\com\gym\auth\dto\LoginRequest.java

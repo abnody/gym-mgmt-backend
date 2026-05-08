@@ -84,6 +84,8 @@ services:
   # ── MICROSERVICES ───────────────────────────────────────────────────────────
   auth-service:
     build: ./auth-service
+    env_file:
+      - ./.env
     container_name: gym-auth
     ports:
       - "8081:8081"

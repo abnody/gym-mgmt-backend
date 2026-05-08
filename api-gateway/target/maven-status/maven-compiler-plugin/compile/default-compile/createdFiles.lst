@@ -1,3 +1,4 @@
 com\gym\gateway\filter\JwtAuthFilter$Config.class
 com\gym\gateway\ApiGatewayApplication.class
 com\gym\gateway\filter\JwtAuthFilter.class
+com\gym\gateway\config\CorsConfig.class
